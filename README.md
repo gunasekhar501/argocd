@@ -27,16 +27,17 @@ Before deploying Argo CD, ensure you have the following tools installed:
 ├── charts/                # Directory for Helm charts
 ├── values.yaml            # Custom values for Argo CD installation
 └── README.md              # Instructions for setting up Argo CD
+```
 
+## Configuration Overview
 
-Configuration Overview
 This deployment leverages a customized values.yaml to define the Argo CD setup:
 
-Global Settings: Node selectors, tolerations, and domain configuration.
+- **Global Settings: Node selectors, tolerations, and domain configuration.
 Custom Resource Definitions (CRDs): Ensures CRDs are installed and retained on uninstall.
-Ingress: Configured for internal ALB with SSL.
-Autoscaling: Horizontal Pod Autoscaling (HPA) is enabled for the Argo CD server and repo-server components.
-Key configuration parameters include:
+- **Ingress: Configured for internal ALB with SSL.
+- **Autoscaling: Horizontal Pod Autoscaling (HPA) is enabled for the Argo CD server and repo-server components.
+## Key configuration parameters include:
 
 Parameter	Description	Default
 global.domain	Base domain for ingress URLs	""
@@ -46,19 +47,21 @@ ingress.annotations	Annotations for ALB ingress (SSL, CIDRs, etc.)	Customizable
 redis-ha.enabled	Enable highly available Redis setup	true
 For a full list of configurable options, see the Argo CD Helm chart documentation.
 
-Installation Instructions
+## Installation Instructions
 1. Add the Argo Helm Repository
 First, add the Argo CD Helm chart repository:
-
 ```bash
-
 helm repo add argo https://argoproj.github.io/argo-helm
 helm repo update
+```
+
 2. Install Argo CD
 Install Argo CD into your Kubernetes cluster using the customized values.yaml file:
 
 ```bash
 helm install argocd argo/argo-cd --namespace argocd --create-namespace -f values.yaml
+```
+
 This will deploy Argo CD in the argocd namespace using your configurations.
 
 3. Access Argo CD
@@ -66,15 +69,17 @@ After installation, access the Argo CD dashboard via the configured domain:
 
 ```bash
 kubectl get svc -n argocd argocd-server
+```
 If ingress is configured correctly, the dashboard will be available at https://argocd.<your-domain>.com.
 
 Managing Argo CD
 Access Argo CD UI
 To log in to the Argo CD UI, you'll need the initial admin password, which can be retrieved with:
 
-bash
-Copy code
+```bash
 kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+```
+
 Use this password with the username admin to access the dashboard.
 
 Sync and Manage Applications
@@ -83,11 +88,11 @@ Argo CD allows you to sync and manage Kubernetes applications declaratively thro
 Uninstallation
 To uninstall Argo CD from your cluster:
 
-bash
-Copy code
+```bash
 helm uninstall argocd --namespace argocd
+```
 Optionally, delete the namespace and any remaining resources:
 
-bash
-Copy code
+```bash
 kubectl delete namespace argocd
+```
