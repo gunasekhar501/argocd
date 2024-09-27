@@ -72,7 +72,7 @@ kubectl get svc -n argocd argocd-server
 ```
 If ingress is configured correctly, the dashboard will be available at https://argocd.<your-domain>.com.
 
-Managing Argo CD
+## Managing Argo CD
 Access Argo CD UI
 To log in to the Argo CD UI, you'll need the initial admin password, which can be retrieved with:
 
@@ -85,7 +85,7 @@ Use this password with the username admin to access the dashboard.
 Sync and Manage Applications
 Argo CD allows you to sync and manage Kubernetes applications declaratively through GitOps. Refer to Argo CD Documentation for more details.
 
-Uninstallation
+## Uninstallation
 To uninstall Argo CD from your cluster:
 
 ```bash
