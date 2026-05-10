@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: java-secure-pipeline-prod
+  namespace: argocd
+  annotations:
+    notifications.argoproj.io/subscribe.on-deployed.slack: platform-releases
+    notifications.argoproj.io/subscribe.on-health-degraded.slack: platform-alerts
+    notifications.argoproj.io/subscribe.on-sync-failed.slack: platform-alerts
+spec:
+  project: java-secure-pipeline
+  source:
+    repoURL: oci://123456789012.dkr.ecr.eu-west-2.amazonaws.com/helm-charts
+    chart: java-secure-pipeline
+    targetRevision: "*"
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-prod.yaml
+      parameters:
+        - name: image.tag
+          value: latest
+  destination:
+    server: https://prod-eks.bank.co.uk
+    namespace: java-secure-pipeline-prod
+  syncPolicy:
+    automated:
+      prune: false        # never auto-prune in prod
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - RespectIgnoreDifferences=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 30s
+        factor: 2
+        maxDuration: 5m
+  revisionHistoryLimit: 10
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers: [/spec/replicas]   # HPA manages replicas

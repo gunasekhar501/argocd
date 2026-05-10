@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: java-secure-pipeline
+  namespace: argocd
+spec:
+  description: Enterprise Java secure pipeline project
+  sourceRepos:
+    - https://gitlab.bank.co.uk/platform/java-secure-pipeline.git
+    - oci://123456789012.dkr.ecr.eu-west-2.amazonaws.com/helm-charts
+  destinations:
+    - namespace: java-secure-pipeline-dev
+      server: https://kubernetes.default.svc
+    - namespace: java-secure-pipeline-staging
+      server: https://kubernetes.default.svc
+    - namespace: java-secure-pipeline-prod
+      server: https://prod-eks.bank.co.uk
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  namespaceResourceBlacklist:
+    - group: ""
+      kind: ResourceQuota
+  roles:
+    - name: developer
+      policies:
+        - p, proj:java-secure-pipeline:developer, applications, get, java-secure-pipeline/*, allow
+        - p, proj:java-secure-pipeline:developer, applications, sync, java-secure-pipeline/dev, allow
+      groups: [dev-team]
+    - name: platform
+      policies:
+        - p, proj:java-secure-pipeline:platform, applications, *, java-secure-pipeline/*, allow
+      groups: [platform-team, security-team]
